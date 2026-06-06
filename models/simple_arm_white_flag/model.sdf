@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="simple_arm_white_flag">
+    <include>
+      <uri>model://simple_arm_gripper</uri>
+    </include>
+
+    <include>
+      <uri>model://white_flag</uri>
+      <pose>1.98 0 1.05 0 0 0</pose>
+    </include>
+
+    <joint name="white_flag_to_gripper" type="fixed">
+      <parent>simple_arm_gripper::simple_gripper::palm</parent>
+      <child>white_flag::pole</child>
+    </joint>
+  </model>
+</sdf>

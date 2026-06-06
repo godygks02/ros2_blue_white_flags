@@ -56,7 +56,7 @@
       </visual>
     </link>
     <link name="left_finger">
-      <pose>0.1 0.2 0.05 0 0 -0.78539</pose>
+      <pose>0.18 0.08 0.05 0 0 1.5707</pose>
       <inertial>
         <mass>0.1</mass>
       </inertial>
@@ -89,7 +89,7 @@
       </visual>
     </link>
     <link name="left_finger_tip">
-      <pose>0.336 0.3 0.05 0 0 1.5707</pose>
+      <pose>0.34 0.04 0.05 0 0 0</pose>
       <inertial>
         <mass>0.5</mass>
       </inertial>
@@ -122,7 +122,7 @@
       </visual>
     </link>
     <link name="right_finger">
-      <pose>0.1 -0.2 0.05 0 0 .78539</pose>
+      <pose>0.18 -0.08 0.05 0 0 1.5707</pose>
       <inertial>
         <mass>0.1</mass>
       </inertial>
@@ -155,7 +155,7 @@
       </visual>
     </link>
     <link name="right_finger_tip">
-      <pose>0.336 -0.3 0.05 0 0 1.5707</pose>
+      <pose>0.34 -0.04 0.05 0 0 0</pose>
       <inertial>
         <mass>0.1</mass>
       </inertial>
@@ -192,7 +192,7 @@
       <child>left_finger</child>
       <parent>palm</parent>
       <axis>
-        <limit><lower>-0.8</lower><upper>0.8</upper></limit>
+        <limit><lower>0</lower><upper>0</upper></limit>
         <xyz>0 0 1</xyz>
       </axis>
     </joint>
@@ -201,7 +201,7 @@
       <child>left_finger_tip</child>
       <parent>left_finger</parent>
       <axis>
-        <limit><lower>-0.8</lower><upper>0.8</upper></limit>
+        <limit><lower>0</lower><upper>0</upper></limit>
         <xyz>0 0 1</xyz>
       </axis>
     </joint>
@@ -210,7 +210,7 @@
       <child>right_finger</child>
       <parent>palm</parent>
       <axis>
-        <limit><lower>-0.8</lower><upper>0.8</upper></limit>
+        <limit><lower>0</lower><upper>0</upper></limit>
         <xyz>0 0 1</xyz>
       </axis>
     </joint>
@@ -219,7 +219,7 @@
       <child>right_finger_tip</child>
       <parent>right_finger</parent>
       <axis>
-        <limit><lower>-0.8</lower><upper>0.8</upper></limit>
+        <limit><lower>0</lower><upper>0</upper></limit>
         <xyz>0 0 1</xyz>
       </axis>
     </joint>
