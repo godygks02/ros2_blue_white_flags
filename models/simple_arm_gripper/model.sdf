@@ -1,0 +1,37 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="simple_arm_gripper">
+    <include><uri>model://simple_arm</uri></include>
+    <include><uri>model://simple_gripper</uri><pose>1.8 0 1 0 0 0</pose></include>
+    
+    <joint name="fixed_to_world" type="fixed">
+      <parent>world</parent>
+      <child>simple_arm::arm_base</child>
+    </joint>
+
+    <joint name="arm_gripper_joint" type="revolute">
+      <parent>simple_arm::arm_wrist_roll</parent>
+      <child>simple_gripper::riser</child>
+      <axis><limit><lower>0</lower><upper>0</upper></limit><xyz>0 0 1</xyz></axis>
+    </joint>
+
+    <plugin name="joint_trajectory_controller" filename="libgazebo_ros_joint_pose_trajectory.so">
+      <ros><remapping>set_joint_trajectory:=joint_trajectory</remapping></ros>
+      <update_rate>50</update_rate>
+      <frame_id>world</frame_id>
+      <has_pid>true</has_pid>
+      <p>1000.0</p><i>10.0</i><d>100.0</d>
+    </plugin>
+
+    <plugin name="joint_state_publisher" filename="libgazebo_ros_joint_state_publisher.so">
+      <ros><remapping>joint_states:=joint_states</remapping></ros>
+      <update_rate>20</update_rate>
+      <!-- 로봇이 가진 관절들을 명시 (네임스페이스와 상관없이 내부 이름 사용) -->
+      <joint_name>simple_arm::arm_shoulder_pan_joint</joint_name>
+      <joint_name>simple_arm::arm_elbow_pan_joint</joint_name>
+      <joint_name>simple_arm::arm_wrist_lift_joint</joint_name>
+      <joint_name>simple_arm::arm_wrist_roll_joint</joint_name>
+      <joint_name>simple_gripper::palm_riser</joint_name>
+    </plugin>
+  </model>
+</sdf>
