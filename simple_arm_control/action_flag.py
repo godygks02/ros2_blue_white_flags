@@ -11,7 +11,8 @@ def get_action_target(action_type):
         "up": 0.9,
         "down": 0.1,
         "home": 0.5,
-        "ready": 0.5
+        "ready": 0.5,
+        "rotate": 3.14
     }
     return targets.get(action_type, 0.5)
 

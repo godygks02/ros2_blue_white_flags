@@ -15,29 +15,43 @@ class RobotActionHandler:
         self.name = name
         self.pub = pub
         
-        self.target_keyword = 'palm_riser'
-        self.actual_joint_name = None
+        self.riser_keyword = 'palm_riser'
+        self.roll_keyword = 'arm_wrist_roll_joint'
+        
+        self.actual_riser_name = None
+        self.actual_roll_name = None
         
         self.current_height = 0.5
         self.cmd_height = 0.5
         self.target_height = 0.5
         self.home_height = 0.5
         
+        self.current_roll = 0.0
+        self.cmd_roll = 0.0
+        self.target_roll = 0.0
+        
         self.step_size = 0.03
+        self.roll_step_size = 0.1
         self.is_moving = False
+        self.is_rotating = False
         self.returning_home = False
         self.initialized = False
 
     def handle_joint_state(self, msg):
-        if self.actual_joint_name is None:
+        if self.actual_riser_name is None or self.actual_roll_name is None:
             for j_name in msg.name:
-                if self.target_keyword in j_name:
-                    self.actual_joint_name = j_name
-                    self.node.get_logger().info(f'[{self.name}] Matched: {j_name}')
-                    break
+                if self.riser_keyword in j_name:
+                    self.actual_riser_name = j_name
+                if self.roll_keyword in j_name:
+                    self.actual_roll_name = j_name
+            
+            if self.actual_riser_name:
+                self.node.get_logger().info(f'[{self.name}] Matched Riser: {self.actual_riser_name}')
+            if self.actual_roll_name:
+                self.node.get_logger().info(f'[{self.name}] Matched Roll: {self.actual_roll_name}')
         
-        if self.actual_joint_name and self.actual_joint_name in msg.name:
-            idx = msg.name.index(self.actual_joint_name)
+        if self.actual_riser_name and self.actual_riser_name in msg.name:
+            idx = msg.name.index(self.actual_riser_name)
             self.current_height = msg.position[idx]
             if not self.initialized:
                 self.cmd_height = self.current_height
@@ -45,44 +59,75 @@ class RobotActionHandler:
                 self.is_moving = True
                 self.returning_home = True
                 self.initialized = True
+        
+        if self.actual_roll_name and self.actual_roll_name in msg.name:
+            idx = msg.name.index(self.actual_roll_name)
+            self.current_roll = msg.position[idx]
 
     def start_action(self, action_type):
-        # action_flag.py에서 목표 높이를 가져옴 (up: 0.9, down: 0.1)
-        self.target_height = action_flag.get_action_target(action_type)
-        self.is_moving = True
-        self.returning_home = False
-        self.node.get_logger().info(f'[{self.name}] Action {action_type} -> {self.target_height}')
+        if action_type == "rotate":
+            self.target_roll = action_flag.get_action_target(action_type)
+            self.is_rotating = True
+            self.node.get_logger().info(f'[{self.name}] Action {action_type} -> {self.target_roll}')
+        else:
+            self.target_height = action_flag.get_action_target(action_type)
+            self.is_moving = True
+            self.returning_home = False
+            self.node.get_logger().info(f'[{self.name}] Action {action_type} -> {self.target_height}')
 
     def step(self):
-        if not self.initialized or self.actual_joint_name is None: return
+        if not self.initialized: return
+        
+        # Riser Step
+        if self.actual_riser_name:
+            diff = self.target_height - self.cmd_height
+            if abs(diff) <= self.step_size:
+                self.cmd_height = self.target_height
+                if self.is_moving:
+                    if not self.returning_home:
+                        self.target_height = self.home_height
+                        self.returning_home = True
+                    else:
+                        self.is_moving = False
+            else:
+                if diff > 0: self.cmd_height += self.step_size
+                else: self.cmd_height -= self.step_size
 
-        diff = self.target_height - self.cmd_height
-        if abs(diff) <= self.step_size:
-            self.cmd_height = self.target_height
-            self.publish_height(self.cmd_height)
-            
-            if self.is_moving:
-                if not self.returning_home:
-                    # 목표 지점(0.9 or 0.1) 도착 -> 다시 0.5로 복귀
-                    self.target_height = self.home_height
-                    self.returning_home = True
-                else:
-                    # 복귀 완료
-                    self.is_moving = False
-            return
+        # Roll Step
+        if self.actual_roll_name:
+            diff_roll = self.target_roll - self.cmd_roll
+            if abs(diff_roll) <= self.roll_step_size:
+                self.cmd_roll = self.target_roll
+                if self.is_rotating:
+                    if self.target_roll != 0.0:
+                        self.target_roll = 0.0 # Return to 0
+                    else:
+                        self.is_rotating = False
+            else:
+                if diff_roll > 0: self.cmd_roll += self.roll_step_size
+                else: self.cmd_roll -= self.roll_step_size
 
-        if diff > 0: self.cmd_height += self.step_size
-        else: self.cmd_height -= self.step_size
-        self.publish_height(self.cmd_height)
+        self.publish_trajectory()
 
-    def publish_height(self, height):
+    def publish_trajectory(self):
         traj = JointTrajectory()
         traj.header.stamp.sec = 0
         traj.header.stamp.nanosec = 0
         traj.header.frame_id = 'world'
-        traj.joint_names = [self.actual_joint_name]
+        
+        joint_names = []
+        positions = []
+        
+        if self.actual_riser_name:
+            joint_names.append(self.actual_riser_name)
+            positions.append(self.cmd_height)
+        if self.actual_roll_name:
+            joint_names.append(self.actual_roll_name)
+            positions.append(self.cmd_roll)
+            
+        traj.joint_names = joint_names
         p = JointTrajectoryPoint()
-        p.positions = [height]
+        p.positions = positions
         p.time_from_start = Duration(sec=0, nanosec=20000000)
         traj.points = [p]
         self.pub.publish(traj)

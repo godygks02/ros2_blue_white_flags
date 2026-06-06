@@ -24,7 +24,7 @@ def process_text_to_commands(text):
 
     [동작 규칙]
     - "id" 값: "blue" (청기), "white" (백기)
-    - "action" 값: "up" (올려), "down" (내려), "keep" (유지/가만히)
+    - "action" 값: "up" (올려), "down" (내려), "rotate" (돌려/회전), "keep" (유지/가만히)
     - '모두'라는 말이 있으면 청기와 백기 객체를 각각 생성하세요.
 
     [실제 변환할 명령]
