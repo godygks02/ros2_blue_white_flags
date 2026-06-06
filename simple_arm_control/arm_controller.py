@@ -32,7 +32,7 @@ class MultiArmController(Node):
             self.create_subscription(Float64, f'/{name}/arm_height', 
                                     partial(self.height_callback, robot_name=name), 10)
 
-        self.step_size = 0.01
+        self.step_size = 0.05
         self.delay = 0.02
         self.timer = self.create_timer(self.delay, self.move_step_callback)
         self.get_logger().info('Multi-Arm Controller Initialized with Auto-Naming.')
@@ -53,8 +53,11 @@ class MultiArmController(Node):
             robot['current'] = msg.position[idx]
             if not robot['initialized']:
                 robot['cmd'] = robot['current']
-                robot['target'] = robot['current']
+                # 시작 시 초기 목표 위치를 0.5로 설정
+                robot['target'] = 0.5 
+                robot['moving'] = True
                 robot['initialized'] = True
+                self.get_logger().info(f'[{robot_name}] Initialized. Moving to start position: 0.5')
 
     def height_callback(self, msg, robot_name):
         robot = self.robots[robot_name]
