@@ -45,6 +45,21 @@ ros2 run gazebo_ros spawn_entity.py -file ~/.gazebo/models/simple_arm_gripper/mo
 ros2 run gazebo_ros spawn_entity.py -file ~/.gazebo/models/simple_arm_gripper/model.sdf -entity robot2 -robot_namespace robot2 -x 0 -y 2
 ```
 
+청기/백기까지 붙은 로봇은 아래 모델로 소환할 수 있습니다.
+```bash
+# 청기 로봇
+ros2 run gazebo_ros spawn_entity.py -file ~/.gazebo/models/simple_arm_blue_flag/model.sdf -entity robot1 -robot_namespace robot1 -x 0 -y 0
+
+# 백기 로봇
+ros2 run gazebo_ros spawn_entity.py -file ~/.gazebo/models/simple_arm_white_flag/model.sdf -entity robot2 -robot_namespace robot2 -x 0 -y 2
+```
+
+깃발만 따로 확인하려면 아래처럼 독립 모델을 소환합니다.
+```bash
+ros2 run gazebo_ros spawn_entity.py -file ~/.gazebo/models/blue_flag/model.sdf -entity blue_flag -x 1.5 -y 0 -z 0
+ros2 run gazebo_ros spawn_entity.py -file ~/.gazebo/models/white_flag/model.sdf -entity white_flag -x 1.5 -y 1 -z 0
+```
+
 #### C. 제어 노드 실행
 ```bash
 ros2 run simple_arm_control arm_controller

@@ -62,7 +62,7 @@
     <link name="left_finger">
       <gravity>0</gravity>
       <kinematic>0</kinematic>
-      <pose>0.1 0.2 0.05 0 0 -0.78539</pose>
+      <pose>0.18 0.08 0.05 0 0 1.5707</pose>
       <inertial>
         <mass>0.1</mass>
       </inertial>
@@ -97,7 +97,7 @@
     <link name="left_finger_tip">
       <gravity>0</gravity>
       <kinematic>0</kinematic>
-      <pose>0.336 0.3 0.05 0 0 1.5707</pose>
+      <pose>0.34 0.04 0.05 0 0 0</pose>
       <inertial>
         <mass>0.5</mass>
       </inertial>
@@ -132,7 +132,7 @@
     <link name="right_finger">
       <gravity>0</gravity>
       <kinematic>0</kinematic>
-      <pose>0.1 -0.2 0.05 0 0 .78539</pose>
+      <pose>0.18 -0.08 0.05 0 0 1.5707</pose>
       <inertial>
         <mass>0.1</mass>
       </inertial>
@@ -167,7 +167,7 @@
     <link name="right_finger_tip">
       <gravity>0</gravity>
       <kinematic>0</kinematic>
-      <pose>0.336 -0.3 0.05 0 0 1.5707</pose>
+      <pose>0.34 -0.04 0.05 0 0 0</pose>
       <inertial>
         <mass>0.1</mass>
       </inertial>
@@ -205,8 +205,8 @@
       <parent>palm</parent>
       <axis>
         <limit>
-          <lower>-0.8</lower>
-          <upper>0.8</upper>
+          <lower>0</lower>
+          <upper>0</upper>
         </limit>
         <xyz>0 0 1</xyz>
         <use_parent_model_frame>true</use_parent_model_frame>
@@ -218,8 +218,8 @@
       <parent>left_finger</parent>
       <axis>
         <limit>
-          <lower>-0.8</lower>
-          <upper>0.8</upper>
+          <lower>0</lower>
+          <upper>0</upper>
         </limit>
         <xyz>0 0 1</xyz>
         <use_parent_model_frame>true</use_parent_model_frame>
@@ -231,8 +231,8 @@
       <parent>palm</parent>
       <axis>
         <limit>
-          <lower>-0.8</lower>
-          <upper>0.8</upper>
+          <lower>0</lower>
+          <upper>0</upper>
         </limit>
         <xyz>0 0 1</xyz>
         <use_parent_model_frame>true</use_parent_model_frame>
@@ -244,8 +244,8 @@
       <parent>right_finger</parent>
       <axis>
         <limit>
-          <lower>-0.8</lower>
-          <upper>0.8</upper>
+          <lower>0</lower>
+          <upper>0</upper>
         </limit>
         <xyz>0 0 1</xyz>
         <use_parent_model_frame>true</use_parent_model_frame>

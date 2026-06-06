@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="white_flag">
+    <static>false</static>
+
+    <link name="pole">
+      <gravity>0</gravity>
+      <pose>0 0 0.525 0 0 0</pose>
+      <inertial>
+        <mass>0.075</mass>
+        <inertia>
+          <ixx>0.003</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.003</iyy>
+          <iyz>0</iyz>
+          <izz>0.00001</izz>
+        </inertia>
+      </inertial>
+      <collision name="pole_collision">
+        <geometry>
+          <cylinder>
+            <radius>0.0225</radius>
+            <length>1.05</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="pole_visual">
+        <geometry>
+          <cylinder>
+            <radius>0.0225</radius>
+            <length>1.05</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.75 0.75 0.75 1</ambient>
+          <diffuse>0.85 0.85 0.85 1</diffuse>
+          <specular>0.2 0.2 0.2 1</specular>
+        </material>
+      </visual>
+    </link>
+
+    <link name="cloth">
+      <gravity>0</gravity>
+      <pose>0.255 0 0.78 0 0 0</pose>
+      <inertial>
+        <mass>0.03</mass>
+        <inertia>
+          <ixx>0.0001</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.0003</iyy>
+          <iyz>0</iyz>
+          <izz>0.0003</izz>
+        </inertia>
+      </inertial>
+      <collision name="cloth_collision">
+        <geometry>
+          <box>
+            <size>0.48 0.0225 0.33</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="cloth_visual">
+        <geometry>
+          <box>
+            <size>0.48 0.0225 0.33</size>
+          </box>
+        </geometry>
+        <material>
+          <ambient>0.9 0.9 0.9 1</ambient>
+          <diffuse>1.0 1.0 1.0 1</diffuse>
+          <specular>0.35 0.35 0.35 1</specular>
+        </material>
+      </visual>
+    </link>
+
+    <joint name="cloth_to_pole" type="fixed">
+      <parent>pole</parent>
+      <child>cloth</child>
+    </joint>
+  </model>
+</sdf>
