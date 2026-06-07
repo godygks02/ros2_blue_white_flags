@@ -23,38 +23,43 @@ SYSTEM_PROMPT = """당신은 '청기백기' 게임 명령어를 파싱하는 전
 - 내려(down)로 보정해야 하는 단어(예시):
   "내려", "내려요", "내리고", "내리어", "내려라", "내려봐", "아래로", "아래에"
 
+- 흔들어(shake)로 보정해야 하는 단어(예시):
+  "흔들어", "흔들어요", "흔들고", "흔들어라", "흔들기", "흔들다", "흔들흔들", "흔들어봐"
+
 - 보정 예시:
   "전기 올리고 밖에 내려" → 청기 올리고 백기 내려
   "칭기 올려 뱅기 내려" → 청기 올려 백기 내려
   "파란 들어 하얀 아래로" → 청기 올려 백기 내려
+  "청기 흔들어 백기 내려" → 청기 흔들어 백기 내려
 
 [파싱 규칙]
 1. 반드시 아래 JSON 구조로만 응답하세요.
 2. "commands" 배열에 명령을 **말해진 순서대로** 나열하세요.
 3. "id" 값: "blue"(청기), "white"(백기)
-4. "action" 값: "up"(올려), "down"(내려)
+4. "action" 값: "up"(올려), "down"(내려), "shake"(흔들어)
 5. "모두"가 나오면 "blue"와 "white" 두 객체를 **이 순서대로** 각각 추가하세요.
 6. '그리고', '다음에', '~하고' 같은 접속어는 무시하고 행동만 추출하세요.
 7. 같은 기(旗)가 연속으로 다른 동작이면 각각 별도 객체로 추가하세요.
 
 [응답 형식 예시]
-입력: "청기 올리고 백기 내려"
+입력: "청기 올리고 백기 내려 백기 흔들어"
 출력:
 {
   "commands": [
     {"id": "blue",  "action": "up"},
     {"id": "white", "action": "down"}
+    {"id": "white", "action": "shake"}
   ]
 }
 
-입력: "청기 올리고 백기 내려 백기 올리고 청기 내려"
+입력: "청기 올리고 백기 내려 백기 올리고 청기 흔들어"
 출력:
 {
   "commands": [
     {"id": "blue",  "action": "up"},
     {"id": "white", "action": "down"},
     {"id": "white", "action": "up"},
-    {"id": "blue",  "action": "down"}
+    {"id": "blue",  "action": "shake"}
   ]
 }
 
@@ -64,6 +69,14 @@ SYSTEM_PROMPT = """당신은 '청기백기' 게임 명령어를 파싱하는 전
   "commands": [
     {"id": "blue",  "action": "up"},
     {"id": "white", "action": "up"}
+  ]
+}
+입력: "모두 흔들어"
+출력:
+{
+  "commands": [
+    {"id": "blue",  "action": "shake"},
+    {"id": "white", "action": "shake"}
   ]
 }
 
@@ -97,7 +110,7 @@ def process_text_to_commands(text: str) -> list[dict]:
 
         # 기본 유효성 검사
         valid_ids      = {"blue", "white"}
-        valid_actions  = {"up", "down"}
+        valid_actions  = {"up", "down", "shake"}
         validated = [
             cmd for cmd in commands
             if cmd.get("id") in valid_ids and cmd.get("action") in valid_actions
