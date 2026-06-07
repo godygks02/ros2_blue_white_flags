@@ -1,5 +1,4 @@
 # Blue White Flags Game - Distributed ROS2 Control
-
 Gazebo 시뮬레이터에서 로봇 팔(`simple_arm_gripper`)을 제어하여 청기백기 게임을 수행하기 위한 ROS 2 패키지입니다. 
 음성 인식(STT)과 LLM(GPT-4o-mini)을 결합하여 복잡한 순차적 명령을 안정적으로 수행할 수 있는 **분산 제어 아키텍처**를 채택하고 있습니다.
 
@@ -55,7 +54,7 @@ ros2 run simple_arm_control robot_handler --ros-args -p robot_name:=robot2 -r __
 # 터미널 5 (중앙 배분기)
 ros2 run simple_arm_control arm_controller
 # 터미널 6 (음성 인식 메인)
-cd ~/ros2study/src/simple_arm_control
+cd .../ros2_blue_white_flags
 python3 main.py
 ```
 
