@@ -22,7 +22,7 @@ Gazebo 시뮬레이터에서 로봇 팔(`simple_arm_gripper`)을 제어하여 �
 ### 1. 의존성 패키지 설치
 음성 인식 및 LLM 연동을 위해 다음 라이브러리가 필요합니다.
 ```bash
-pip install openai SpeechRecognition pynput
+pip install -r requirements.txt
 ```
 *시스템에 `PortAudio` 라이브러리가 필요할 수 있습니다 (`sudo apt install python3-pyaudio` 혹은 `portaudio19-dev`).*
 
