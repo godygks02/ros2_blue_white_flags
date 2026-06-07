@@ -9,7 +9,7 @@ Gazebo 시뮬레이터에서 로봇 팔(`simple_arm_gripper`)을 제어하여 �
 - 가천대학교 202135810 인공지능전공 이규석 (zxc201106@gmail.com)
 - 가천대학교 202135768 인공지능전공 이유원 (ydbdnjs@gachon.ac.kr)
 - 가천대학교 202135767 인공지능전공 박용우 (yongwoo5058@gmail.com)
-- 가천대학교 202135845 인공지능전공 최준혁 (v0sxja77@gachon.ac.kr)
+- 가천대학교 202135845 인공지능전공 최준혁 (vosxja77@gachon.ac.kr)
 
 
 ## 주요 기능
