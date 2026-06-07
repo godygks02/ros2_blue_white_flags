@@ -18,6 +18,38 @@ Gazebo 시뮬레이터에서 로봇 팔(`simple_arm_gripper`)을 제어하여 �
 - **다중 로봇 제어**: `blue` (robot1)와 `white` (robot2) 독립 및 동시 제어를 지원합니다.
 - **동작 리스트**: 올리기(`up`), 내리기(`down`), 흔들기(돌리기)(`rotate`), 유지
 
+## 시스템 구조도
+```mermaid
+graph LR
+    USER["🎤 사용자 음성 입력 (Voice)"]
+    STT["stt_worker.py (음성 인식 스레드)"]
+    MAIN["main.py (메인 파이프라인)"]
+    LLM["llm_processor.py (GPT-4o-mini 파서)"]
+    CONTROLLER["arm_controller (ROS 2 제어 노드)"]
+    GAZEBO["🤖 Gazebo 시뮬레이터 (청기/백기 구동)"]
+
+    USER --> STT
+    STT --> MAIN
+    MAIN --> LLM
+    LLM --> MAIN
+    MAIN --> CONTROLLER
+    CONTROLLER --> GAZEBO
+
+    USER -.->|Audio| STT
+    STT -.->|ko-KR Text| MAIN
+    MAIN -.->|Prompt Call| LLM
+    LLM -.->|Strict JSON| MAIN
+    MAIN -.->|/joint_trajectory| CONTROLLER
+    CONTROLLER -.->|Joint Position| GAZEBO
+
+    style USER fill:#E8F4F8,stroke:#3498DB,stroke-width:2px,color:#2980B9
+    style STT fill:#F4F6F7,stroke:#7F8C8D,stroke-width:2px,color:#34495E
+    style MAIN fill:#F4F6F7,stroke:#7F8C8D,stroke-width:2px,color:#34495E
+    style LLM fill:#EBF5FB,stroke:#2980B9,stroke-width:2px,color:#1B4F72
+    style CONTROLLER fill:#FEF9E7,stroke:#F39C12,stroke-width:2px,color:#7E5109
+    style GAZEBO fill:#FEF9E7,stroke:#F39C12,stroke-width:2px,color:#7E5109
+```
+
 ## 설치 및 준비 사항
 
 ### 1. 의존성 패키지 설치
