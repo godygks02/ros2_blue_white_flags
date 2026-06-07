@@ -50,6 +50,9 @@ cp -r ~/ros2study/src/simple_arm_control/models/* ~/.gazebo/models/
 4.  **Management Layer (`robot_handler.py`)**: 로봇별 독립적인 **Action Queue** 관리. 이전 동작 완료(Service Response) 확인 후 다음 명령 수행.
 5.  **Execution Layer (`robot_servicer.py`)**: 실제 물리 엔진(Gazebo) 연동. **Step-by-step 이동**으로 속도를 조절하고 실시간 위치 피드백(JointState)을 통해 동작 완결성 보장.
 
+<img width="3018" height="925" alt="rosgraph" src="https://github.com/user-attachments/assets/d0f87d1d-3f1e-4fb1-b2a6-3fec28cb67b9" />
+
+
 ---
 
 ## 📂 노드 상세 설명
@@ -125,3 +128,5 @@ python3 main.py
 4. 주변 노이즈 인식 문제
 - **문제**: 음성 인식 과정에서 마이크가 사용자의 명령뿐만 아니라 주변 노이즈까지 인식하여 오작동 가능성이 있었다.
 - **해결 방안**: 스페이스바를 누르고 있는 동안만 음성 인식이 활성화되도록 수정하였다. 이를 통해 사용자가 명령을 말하는 순간에만 입력을 처리하도록 하여 노이즈로 인한 오작동을 줄였다.
+
+
