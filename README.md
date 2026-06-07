@@ -11,47 +11,23 @@ Gazebo 시뮬레이터에서 로봇 팔(`simple_arm_gripper`)을 제어하여 �
 - 가천대학교 202135767 인공지능전공 박용우 (yongwoo5058@gmail.com)
 - 가천대학교 202135845 인공지능전공 최준혁 (vosxja77@gachon.ac.kr)
 
----
 
-## 🏗 시스템 아키텍처 (Architecture)
+## 주요 기능
+- **음성 인식 제어**: 사용자의 목소리를 텍스트로 변환하여 로봇을 움직입니다.
+- **LLM 명령어 파싱**: "청기 올려", "백기 돌려", "모두 내려" 등 복잡한 자연어 명령을 JSON 구조로 분석합니다.
+- **다중 로봇 제어**: `blue` (robot1)와 `white` (robot2) 독립 및 동시 제어를 지원합니다.
+- **동작 리스트**: 올리기(`up`), 내리기(`down`), 흔들기(돌리기)(`rotate`), 유지
 
-본 패키지는 명령의 생성부터 물리적 실행까지를 5개의 계층으로 분리하여 관리합니다.
+## 설치 및 준비 사항
 
-1.  **Input Layer (`main.py`)**: 사용자 음성 녹음 및 텍스트 변환 (STT).
-2.  **Intelligence Layer (`llm_processor.py`)**: 자연어를 분석하여 실행 가능한 JSON 명령 리스트로 변환 (LLM).
-3.  **Distribution Layer (`arm_controller.py`)**: 생성된 명령들을 각 로봇(청기/백기)의 전용 채널로 배분.
-4.  **Management Layer (`robot_handler.py`)**: 로봇별 독립적인 **Action Queue** 관리. 이전 동작 완료(Service Response) 확인 후 다음 명령 수행.
-5.  **Execution Layer (`robot_servicer.py`)**: 실제 물리 엔진(Gazebo) 연동. **Step-by-step 이동**으로 속도를 조절하고 실시간 위치 피드백(JointState)을 통해 동작 완결성 보장.
+### 1. 의존성 패키지 설치
+음성 인식 및 LLM 연동을 위해 다음 라이브러리가 필요합니다.
+```bash
+pip install openai SpeechRecognition pynput
+```
+*시스템에 `PortAudio` 라이브러리가 필요할 수 있습니다 (`sudo apt install python3-pyaudio` 혹은 `portaudio19-dev`).*
 
----
-
-## 📂 파일 및 노드 설명
-
-### Core Nodes (ROS 2 Nodes)
-*   **`arm_controller.py` (Multi-Arm Forwarder)**
-    *   `game_commands` 토픽을 구독하여 `blue`/`white` 로봇에게 명령을 전달하는 중앙 배분기입니다.
-*   **`robot_handler.py` (Sequential Queue Manager)**
-    *   각 로봇당 하나씩 실행됩니다. 내부 큐를 가지고 있으며, ROS 2 서비스를 호출하여 동작을 수행합니다. 서비스 응답이 올 때까지 다음 명령을 보류하여 완벽한 순차 제어를 보장합니다.
-*   **`robot_servicer.py` (Physical Service Server)**
-    *   실제 로봇 관절을 제어하는 서비스 서버입니다. `/up`, `/down`, `/shake`, `/home` 서비스를 제공하며, 설정된 `step_size`에 따라 부드럽게 이동하고 물리적 목표 도달 시 응답을 반환합니다.
-
-### Logic Files
-*   **`main.py`**
-    *   전체 시스템의 엔트리 포인트입니다. Push-to-Talk 방식의 음성 입력을 관리합니다.
-*   **`action_flag.py`**
-    *   로봇 동작의 세부 시퀀스(예: up -> [0.9m 상승, 0.5m 복귀])를 정의하는 설정 파일입니다.
-*   **`llm_processor.py`**
-    *   OpenAI API를 사용하여 자연어를 JSON 명령 배열로 변환하는 프롬프트 엔지니어링 로직이 담겨 있습니다.
-*   **`stt_worker.py`**
-    *   스레드 기반의 실시간 음성 녹음 및 Google STT 변환을 담당합니다.
-
----
-
-## 🚀 실행 가이드 (Multi-Terminal Setup)
-
-환경 설정을 완료한 후, 총 6개의 터미널에서 순차적으로 실행하는 것이 가장 안정적입니다.
-
-### Step 0: 빌드 및 환경 설정
+### 2. Gazebo 모델 복사
 ```bash
 cd ~/ros2study
 colcon build --packages-select simple_arm_control --symlink-install
