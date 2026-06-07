@@ -7,7 +7,7 @@ Gazebo 시뮬레이터에서 로봇 팔(`simple_arm_gripper`)을 제어하여 �
 - **음성 인식 제어**: 사용자의 목소리를 텍스트로 변환하여 로봇을 움직입니다.
 - **LLM 명령어 파싱**: "청기 올려", "백기 돌려", "모두 내려" 등 복잡한 자연어 명령을 JSON 구조로 분석합니다.
 - **다중 로봇 제어**: `blue` (robot1)와 `white` (robot2) 독립 및 동시 제어를 지원합니다.
-- **동작 리스트**: 올리기(`up`), 내리기(`down`), 돌리기(`rotate`)
+- **동작 리스트**: 올리기(`up`), 내리기(`down`), 돌리기(`rotate`), 유지
 
 ## 설치 및 준비 사항
 
@@ -22,11 +22,11 @@ pip install openai SpeechRecognition pynput
 ```bash
 # Gazebo 모델 경로에 모델 파일 복사
 mkdir -p ~/.gazebo/models
-cp -r ~/ros2study/src/simple_arm_control/models/* ~/.gazebo/models/
+cp -r .../ros2_blue_white_flags/models/* ~/.gazebo/models/
 ```
 
 ### 3. API 키 설정
-패키지 루트 폴더의 `config.py` 파일을 열어 OpenAI API 키를 입력합니다.
+패키지 루트 폴더의 `config.py.example` 파일을 열어 OpenAI API 키를 입력하고, 파일 확장자를 .py로 변경합니다.
 ```python
 # config.py
 OPENAI_API_KEY = "your-api-key-here"
@@ -73,4 +73,4 @@ python3 main.py
 
 ## 참고 사항
 - **돌리기 명령**: 그리퍼가 Z축 방향으로 180도 회전 후 다시 원위치로 돌아옵니다.
-- **자동 홈 복귀**: 모든 동작(up/down/rotate)이 완료되면 로봇은 자동으로 홈 위치(0.5 height / 0.0 roll)로 돌아오도록 설계되었습니다.
+- **자동 복귀**: 청기백기 게임의 모든 동작(up/down/rotate)이 완료되면 로봇은 자동으로 중앙 위치(0.5 height / 0.0 roll)로 돌아오도록 설계되었습니다.
