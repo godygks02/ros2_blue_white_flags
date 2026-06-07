@@ -25,7 +25,8 @@ setup(
     entry_points={
         'console_scripts': [
             'arm_controller = simple_arm_control.arm_controller:main',
-            'robot_handler = simple_arm_control.robot_handler:main'
+            'robot_handler = simple_arm_control.robot_handler:main',
+            'robot_servicer = simple_arm_control.robot_servicer:main'
         ],
     },
 )
