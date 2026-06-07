@@ -27,34 +27,76 @@ pip install openai SpeechRecognition pynput
 ```
 *시스템에 `PortAudio` 라이브러리가 필요할 수 있습니다 (`sudo apt install python3-pyaudio` 혹은 `portaudio19-dev`).*
 
-### 2. Gazebo 모델 복사
+### 2. 사전 준비 (빌드 및 모델 복사)
 ```bash
+# 빌드
 cd ~/ros2study
 colcon build --packages-select simple_arm_control --symlink-install
 source install/setup.bash
+
+# 모델 파일 복사 (최초 1회)
+mkdir -p ~/.gazebo/models
+cp -r ~/ros2study/src/simple_arm_control/models/* ~/.gazebo/models/
 ```
 
-### Step 1: 물리 제어 서버 실행 (Servicers)
+---
+
+## 🏗 시스템 아키텍처 (Architecture)
+
+본 패키지는 명령의 생성부터 물리적 실행까지를 5개의 계층으로 분리하여 관리합니다.
+
+1.  **Input Layer (`main.py`)**: 사용자 음성 녹음 및 텍스트 변환 (STT).
+2.  **Intelligence Layer (`llm_processor.py`)**: 자연어를 분석하여 실행 가능한 JSON 명령 리스트로 변환 (LLM).
+3.  **Distribution Layer (`arm_controller.py`)**: 생성된 명령들을 각 로봇(청기/백기)의 전용 채널로 배분.
+4.  **Management Layer (`robot_handler.py`)**: 로봇별 독립적인 **Action Queue** 관리. 이전 동작 완료(Service Response) 확인 후 다음 명령 수행.
+5.  **Execution Layer (`robot_servicer.py`)**: 실제 물리 엔진(Gazebo) 연동. **Step-by-step 이동**으로 속도를 조절하고 실시간 위치 피드백(JointState)을 통해 동작 완결성 보장.
+
+---
+
+## 📂 노드 상세 설명
+*   **`arm_controller.py`**: `game_commands`를 받아 각 로봇 핸들러(`/robot1/goal`, `/robot2/goal`)로 전달합니다.
+*   **`robot_handler.py`**: 명령 큐를 관리하며, 서비스 응답이 올 때까지 다음 작업을 보류하는 지휘관 노드입니다.
+*   **`robot_servicer.py`**: 실제 관절 제어 및 물리적 도달 여부를 판단하여 응답을 주는 실행 노드입니다.
+
+---
+
+## 🚀 실행 가이드 (Full Setup Guide)
+
+아래 순서대로 터미널을 각각 열어 실행해 주세요.
+
+### Step 1: 시뮬레이션 환경 실행 (Gazebo & Spawn)
 ```bash
-# 터미널 1 (청기 서버)
+# 터미널 1: 가제보 실행
+ros2 launch gazebo_ros gazebo.launch.py
+
+# 터미널 2: 청기 로봇 (robot1) 소환
+ros2 run gazebo_ros spawn_entity.py -file ~/.gazebo/models/simple_arm_blue_flag/model.sdf -entity robot1 -robot_namespace robot1 -x 0 -y 0
+
+# 터미널 3: 백기 로봇 (robot2) 소환
+ros2 run gazebo_ros spawn_entity.py -file ~/.gazebo/models/simple_arm_white_flag/model.sdf -entity robot2 -robot_namespace robot2 -x 0 -y 2
+```
+
+### Step 2: 물리 제어 서버 실행 (Servicers)
+```bash
+# 터미널 4 (청기 서버)
 ros2 run simple_arm_control robot_servicer --ros-args -p robot_name:=robot1 -r __node:=robot1_servicer
-# 터미널 2 (백기 서버)
+# 터미널 5 (백기 서버)
 ros2 run simple_arm_control robot_servicer --ros-args -p robot_name:=robot2 -r __node:=robot2_servicer
 ```
 
-### Step 2: 순차 큐 관리자 실행 (Handlers)
+### Step 3: 순차 큐 관리자 실행 (Handlers)
 ```bash
-# 터미널 3 (청기 핸들러)
+# 터미널 6 (청기 핸들러)
 ros2 run simple_arm_control robot_handler --ros-args -p robot_name:=robot1 -r __node:=robot1_handler
-# 터미널 4 (백기 핸들러)
+# 터미널 7 (백기 핸들러)
 ros2 run simple_arm_control robot_handler --ros-args -p robot_name:=robot2 -r __node:=robot2_handler
 ```
 
-### Step 3: 메인 시스템 실행
+### Step 4: 중앙 배분 및 음성 인식 실행
 ```bash
-# 터미널 5 (중앙 배분기)
+# 터미널 8 (중앙 배분기)
 ros2 run simple_arm_control arm_controller
-# 터미널 6 (음성 인식 메인)
+# 터미널 9 (음성 인식 메인)
 cd ~/ros2study/src/simple_arm_control
 python3 main.py
 ```
